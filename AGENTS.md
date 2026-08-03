@@ -159,14 +159,18 @@ Use `defgeneric` + `defmethod` only when methods dispatch on multiple types
 
 ### Porting Order (Chronological by creation date)
 
-This section needs to be filled in. It should be a list of unit tests from the
-original serovers repository listed in order of chronological age in that
-original repository. That way, we'll port the oldest tests first. This is a
-relatively small library, so we should be able to test things relatively quickly
-and not get bogged down if we do them in the wrong order so much. The main thing
-is to ensure a one-to-one relationship between the old tests in clojure and the
-new ones in common lisp. See the AGENTS.md file in the `dsolv` repo for an
-example of how this section should look, then edit this section and fill it in.
+**Unit tests (all in `core_test.clj`):**
+
+1. `debian-cases` (2017-03-08) — Debian version comparison with epoch, tilde, and letter rules
+2. `maven-cases` (2017-03-09) — Maven qualifiers (alpha/beta/milestone/rc/snapshot), lexical & numeric comparison
+3. `rpm-cases` (2017-03-29) — RPM version comparison cases
+4. `semver-cases` (2017-03-29) — SemVer with build metadata ignoring and prerelease ordering
+5. `gem-cases` (2017-03-29) — RubyGem version comparison cases
+6. `naive-cases` (2017-04-05) — Naive (punctuation-separated) version comparison
+7. `python-cases` (2017-04-05) — PEP 440 cases incl. local versions and the python-versions list ordering
+
+All 7 test groups live in the single `core_test.clj` file; each group maps
+one-to-one to a `tests/<name>.lisp` parachute file in this repo.
 
 ### Process for Each Test
 
