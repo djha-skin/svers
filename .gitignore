@@ -8,3 +8,6 @@
 # Compiled Lisp files
 *.fasl
 *.fasl.gz
+
+# OCICL downloaded system code (commit ocicl.csv, not ocicl/)
+ocicl/

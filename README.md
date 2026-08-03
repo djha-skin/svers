@@ -9,12 +9,15 @@ Port of the [serovers](https://gitlab.com/djhaskin987/serovers) Clojure library.
 | Scheme | Function | Status |
 |--------|----------|--------|
 | **Debian** | `debian-vercmp` | Full epoch & revision support |
-| **Maven** | `maven-vercmp` | Qualifiers: alpha, beta, milestone, rc, snapshot, ga, final, stable |
+| **Maven** | `maven-vercmp` | Qualifiers: alpha, beta, milestone, rc,
+|          |                | snapshot, ga, final, stable |
 | **RPM** | `rpm-vercmp` | Fedora/RPM version comparison |
 | **SemVer 2.0** | `semver-vercmp` | Including build metadata ignoring |
 | **RubyGem** | `rubygem-vercmp` | Ruby gem version comparison |
-| **Python (PEP 440)** | `python-vercmp` | Full PEP 440 including local versions |
-| **Naive** | `naive-vercmp` | Punctuation-separated parts (used by Python local parts) |
+| **Python (PEP 440)** | `python-vercmp` | Full PEP 440 including
+|                      |                  | local versions |
+| **Naive** | `naive-vercmp` | Punctuation-separated parts (used by
+|           |                 | Python local parts) |
 
 ## How It Works
 
@@ -35,7 +38,7 @@ algorithms — just write a normalization function.
 ## Usage
 
 ```lisp
-(ql:quickload "com.djhaskin.svers")
+(asdf:load-system "com.djhaskin.svers")
 (use-package :com.djhaskin.svers)
 
 ;; Debian version comparison

@@ -1,0 +1,4 @@
+alexandria, ghcr.io/ocicl/alexandria@sha256:e433c2e076ed3bcf8641b97b00192680db2201d305efac9293539dee88c7fbf7, alexandria-20240503-8514d8e/alexandria.asd
+cl-indentify, ghcr.io/ocicl/cl-indentify@sha256:30ff709a629b31630169194b2a832223201513320a90a0cdde4fc4ca3a0e3963, cl-indentify-20241228-a5fba03/cl-indentify.asd
+cl-ppcre, ghcr.io/ocicl/cl-ppcre@sha256:bf073924cf4fd5957a4fd961a95d446ed0e53fa32a5002cbd2d52182874f45e5, cl-ppcre-20250606-a2ea581/cl-ppcre.asd
+parachute, ghcr.io/ocicl/parachute@sha256:46efa9a7204969f1f439f9d83f3d7f9d052901e945a7f9ca27edc9e06de27a1a, parachute-20260226-c365ecc/parachute.asd

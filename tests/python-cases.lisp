@@ -40,18 +40,19 @@
   (is = 0 (python-vercmp a a)))
 
 (define-test python-cases
-  :parent nil
-  ;; Python edge cases
-  (is = 0 (python-vercmp "" ""))
-  (is = 0 (python-vercmp "1.2.3rc1" "1.2.3RC1"))
-  (true (< (python-vercmp "1.0+foo0100" "1.0+foo100") 0))
-  (true (< (python-vercmp "1.0+0100foo" "1.0+100foo") 0))
-  (is = 0 (python-vercmp "1.0.a1" "1.0a1"))
-  (is = 0 (python-vercmp "1.0.rc1" "1.0rc1"))
-  (is = 0 (python-vercmp "1.0.b1" "1.0b1"))
+             :parent nil
+             ;; Python edge cases
+             (is = 0 (python-vercmp "" ""))
+             (is = 0 (python-vercmp "1.2.3rc1" "1.2.3RC1"))
+             (true (< (python-vercmp "1.0+foo0100" "1.0+foo100") 0))
+             (true (< (python-vercmp "1.0+0100foo" "1.0+100foo") 0))
+             (is = 0 (python-vercmp "1.0.a1" "1.0a1"))
+             (is = 0 (python-vercmp "1.0.rc1" "1.0rc1"))
+             (is = 0 (python-vercmp "1.0.b1" "1.0b1"))
 
-  ;; Test the full python-versions ordering
-  (test-python-pair (first *python-versions*) (car (last *python-versions*)))
-  (loop for (a b) on *python-versions*
-        while b
-        do (test-python-pair a b)))
+             ;; Test the full python-versions ordering
+             (test-python-pair (first *python-versions*)
+                               (car (last *python-versions*)))
+             (loop for (a b) on *python-versions*
+                   while b
+                   do (test-python-pair a b)))

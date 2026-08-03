@@ -60,9 +60,9 @@ Please note the following style guidelines:
 * Only 80 characters per line, please, for any text-based file in the
   repository. Wrap intelligently if you must to follow this rule.
 
-* Use `ros fmt <file>` to format Lisp source files. It handles consistent
-  indentation automatically. Run `ros fmt` on all source files before
-  committing.
+* Use the ros `fmt <file>` script (herein included in the skills' `scripts`
+  folder) to format Lisp source files. It handles consistent indentation
+  automatically. Run it on all source files before committing.
 
 * Use `cl-mcp` MCP server for ALL Lisp operations — loading systems, running
   tests, editing forms, checking parens, code search. Do NOT use one-off `sbcl`

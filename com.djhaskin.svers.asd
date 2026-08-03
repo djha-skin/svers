@@ -22,7 +22,8 @@
                )
   :components ((:module "tests"
                 :components
-                ((:file "debian-cases")
+                ((:file "main")
+                 (:file "debian-cases")
                  (:file "maven-cases")
                  (:file "rpm-cases")
                  (:file "semver-cases")
@@ -31,12 +32,19 @@
                  (:file "python-cases"))))
   :description "Test system for svers."
   :perform (asdf:test-op (op c)
-                         (uiop:symbol-call :parachute :test
-                                           (list
-                                             '#:com.djhaskin.svers/tests/debian-cases
-                                             '#:com.djhaskin.svers/tests/maven-cases
-                                             '#:com.djhaskin.svers/tests/rpm-cases
-                                             '#:com.djhaskin.svers/tests/semver-cases
-                                             '#:com.djhaskin.svers/tests/gem-cases
-                                             '#:com.djhaskin.svers/tests/naive-cases
-                                             '#:com.djhaskin.svers/tests/python-cases))))
+                    (uiop:symbol-call :parachute :test
+                      '#:com.djhaskin.svers/tests)
+                    (uiop:symbol-call :parachute :test
+                      '#:com.djhaskin.svers/tests/debian-cases)
+                    (uiop:symbol-call :parachute :test
+                      '#:com.djhaskin.svers/tests/maven-cases)
+                    (uiop:symbol-call :parachute :test
+                      '#:com.djhaskin.svers/tests/rpm-cases)
+                    (uiop:symbol-call :parachute :test
+                      '#:com.djhaskin.svers/tests/semver-cases)
+                    (uiop:symbol-call :parachute :test
+                      '#:com.djhaskin.svers/tests/gem-cases)
+                    (uiop:symbol-call :parachute :test
+                      '#:com.djhaskin.svers/tests/naive-cases)
+                    (uiop:symbol-call :parachute :test
+                      '#:com.djhaskin.svers/tests/python-cases)))

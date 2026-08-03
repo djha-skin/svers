@@ -41,10 +41,10 @@
   "Extract the epoch number from a version string.
   Returns (list epoch version) where epoch is an integer."
   (multiple-value-bind (match groups)
-      (re:scan-to-strings "^([0-9]+):(.*)$" a)
+                       (re:scan-to-strings "^([0-9]+):(.*)$" a)
     (if match
-      (list (parse-integer (elt groups 0)) (elt groups 1))
-      (list 0 a))))
+        (list (parse-integer (elt groups 0)) (elt groups 1))
+        (list 0 a))))
 
 ;;; ─── Lexical comparison ─────────────────────────────────────────────────────
 
@@ -75,8 +75,9 @@
         (cb (length b)))
     (cond
       ((= ca cb) (list va vb))
-      ((> cb ca) (list (append va (make-list (- cb ca) :initial-element +nullc+))
-                       vb))
+      ((> cb ca)
+       (list (append va (make-list (- cb ca) :initial-element +nullc+))
+             vb))
       (t (list va
                (append vb (make-list (- ca cb) :initial-element +nullc+)))))))
 
@@ -97,54 +98,52 @@
          (trimmed-b (re:regex-replace-all "^0+" b ""))
          (ldiff (- (length trimmed-a) (length trimmed-b))))
     (if (zerop ldiff)
-      (if (string< trimmed-a trimmed-b) -1
-        (if (string> trimmed-a trimmed-b) 1 0))
-      ldiff)))
+        (if (string< trimmed-a trimmed-b) -1
+            (if (string> trimmed-a trimmed-b) 1 0))
+        ldiff)))
 
 ;;; ─── Epochless Debian version comparison ───────────────────────────────────
 
 (defun epochless-debian-vercmp (a b)
   "Compare two Debian version strings without epoch."
-  (if (and (string= a "") (string= b ""))
-    0
-    (multiple-value-bind (ma groups-a)
-        (re:scan-to-strings "^([^0-9]*)" a)
-      (declare (ignore ma))
-      (multiple-value-bind (mb groups-b)
-          (re:scan-to-strings "^([^0-9]*)" b)
-        (declare (ignore mb))
-        (let* ((initial-a (if groups-a (elt groups-a 0) ""))
-               (initial-b (if groups-b (elt groups-b 0) ""))
-               (diff (debian-string-compare initial-a initial-b)))
-          (if (not (zerop diff))
-            diff
-            (let ((next-a (re:regex-replace "^[^0-9]*" a ""))
-                  (next-b (re:regex-replace "^[^0-9]*" b "")))
-              (if (and (string= next-a "") (string= next-b ""))
-                0
-                (multiple-value-bind (mna groups-na)
-                    (re:scan-to-strings "^([0-9]*)" next-a)
-                  (declare (ignore mna))
-                  (multiple-value-bind (mnb groups-nb)
-                      (re:scan-to-strings "^([0-9]*)" next-b)
-                    (declare (ignore mnb))
-                    (let* ((numeric-a (if groups-na (elt groups-na 0) ""))
-                           (numeric-b (if groups-nb (elt groups-nb 0) ""))
-                           (ndiff (numeric-part-compare numeric-a numeric-b)))
-                      (if (not (zerop ndiff))
-                        ndiff
-                        (epochless-debian-vercmp
-                          (re:regex-replace "^[0-9]*" next-a "")
-                          (re:regex-replace "^[0-9]*" next-b ""))))))))))))))
+  (labels ((parse-non-digit (s)
+             (nth-value 1 (re:scan-to-strings "^([^0-9]*)" s)))
+           (parse-digit (s)
+             (nth-value 1 (re:scan-to-strings "^([0-9]*)" s)))
+           (compare-once (a b)
+             (let* ((groups-a (parse-non-digit a))
+                    (groups-b (parse-non-digit b))
+                    (initial-a (if groups-a (elt groups-a 0) ""))
+                    (initial-b (if groups-b (elt groups-b 0) ""))
+                    (diff (debian-string-compare initial-a initial-b)))
+               (if (not (zerop diff))
+                   diff
+                   (let* ((next-a (re:regex-replace "^[^0-9]*" a ""))
+                          (next-b (re:regex-replace "^[^0-9]*" b ""))
+                          (num-groups-a (parse-digit next-a))
+                          (num-groups-b (parse-digit next-b))
+                          (numeric-a (if num-groups-a (elt num-groups-a 0) ""))
+                          (numeric-b (if num-groups-b (elt num-groups-b 0) ""))
+                          (ndiff (numeric-part-compare numeric-a numeric-b)))
+                     (if (not (zerop ndiff))
+                         ndiff
+                         (let ((rest-a (re:regex-replace "^[0-9]*" next-a ""))
+                               (rest-b (re:regex-replace "^[0-9]*" next-b "")))
+                           (if (and (string= rest-a "") (string= rest-b ""))
+                               0
+                               (epochless-debian-vercmp rest-a rest-b)))))))))
+    (if (and (string= a "") (string= b ""))
+        0
+        (compare-once a b))))
 
 ;;; ─── Debian version comparison ─────────────────────────────────────────────
 
 (defun debian-vercmp (a b)
   "Compare two Debian version numbers according to the Debian Policy Manual.
-  
+
   Epoch numbers, upstream versions, and Debian revision version parts are
   fully supported.
-  
+
   All other vercmp algorithms in svers are implemented in terms of this
   function."
   (let* ((a-epoch-result (epoch a))
@@ -154,8 +153,8 @@
          (b-epoch (first b-epoch-result))
          (b-vers (second b-epoch-result)))
     (if (= a-epoch b-epoch)
-      (epochless-debian-vercmp a-vers b-vers)
-      (- a-epoch b-epoch))))
+        (epochless-debian-vercmp a-vers b-vers)
+        (- a-epoch b-epoch))))
 
 ;;; ─── Maven version comparison ──────────────────────────────────────────────
 
@@ -243,7 +242,7 @@
                                   c
                                   (string (second pair))))
           (map 'list (lambda (from-char to-char) (list from-char to-char))
-                  "0123456789" "ABCDEFGHIJ")
+               "0123456789" "ABCDEFGHIJ")
           :initial-value part))
 
 ;;; ─── Python version comparison ─────────────────────────────────────────────
@@ -275,7 +274,7 @@
     ((re:scan "^[0-9]+$" a) 1)
     ((re:scan "^[0-9]+$" b) -1)
     (t (if (string< a b) -1
-         (if (string> a b) 1 0)))))
+           (if (string> a b) 1 0)))))
 
 ;;; ─── Naive version comparison ──────────────────────────────────────────────
 
@@ -297,11 +296,11 @@
          (pub-result (debian-vercmp (python-normalize a-pub)
                                     (python-normalize b-pub))))
     (if (zerop pub-result)
-      (cond
-        ((and (search "+" a) (search "+" b))
-         (naive-vercmp (re:regex-replace "^[^\\+]+\\+" a "")
-                       (re:regex-replace "^[^\\+]+\\+" b "")))
-        ((search "+" a) 1)
-        ((search "+" b) -1)
-        (t 0))
-      pub-result)))
+        (cond
+          ((and (search "+" a) (search "+" b))
+           (naive-vercmp (re:regex-replace "^[^\\+]+\\+" a "")
+                         (re:regex-replace "^[^\\+]+\\+" b "")))
+          ((search "+" a) 1)
+          ((search "+" b) -1)
+          (t 0))
+        pub-result)))
