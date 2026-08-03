@@ -159,41 +159,14 @@ Use `defgeneric` + `defmethod` only when methods dispatch on multiple types
 
 ### Porting Order (Chronological by creation date)
 
-**Unit tests:**
-
-1. `core_test.clj` (2016-02-02) — basic resolver, version specs, present packages, retrieval
-2. `util/core_test.clj` (2017-01-11) — utility functions
-3. `data_spec_test.clj` (2017-01-14) — version ranges, comparisons
-4. `interesting_cases_test.clj` (2017-01-16) — managed deps, implied deps
-5. `string_to_req_test.clj` (2017-01-28) — string-to-requirement parsing
-6. `repo_aggregation_test.clj` (2017-01-31) — priority-repo, global-repo
-7. `apt_test.clj` (2017-03-25) — deb-to-degasolv-requirements, apt-repo
-8. `conflict_strat_test.clj` (2017-06-10) — inclusive, prioritized conflict strategies
-9. `disable_alternatives_test.clj` (2017-06-20) — allow-alternatives option
-10. `auxiliary_funcs_test.clj` (2017-06-23) — hoisting, repo query count
-11. `performance_test.clj` (2017-06-23) — pruning, repo query count
-12. `unsuccessful_test.clj` (2017-07-22) — unsuccessful resolution cases
-13. `search_strat_test.clj` (2017-08-16) — depth-first, breadth-first
-14. `subproc_test.clj` (2018-01-06) — subprocess package system
-15. `list_packages_test.clj` (2018-01-17) — list-packages function
-16. `version_suggestions.clj` (2019-08-28) — version suggestion
-
-**Script tests:**
-
-1. `test-apt` (2017-05-11)
-2. `test-option-packs` (2017-07-03)
-3. `test-env-vars` (2017-08-17)
-4. `test-output-format` (2017-08-17)
-5. `test-query-output-format` (2017-08-17)
-6. `test-search-strat` (2017-08-17)
-7. `test-version-comparison` (2017-08-17)
-8. `test-meta` (2017-11-15)
-9. `test-all` (2017-12-23)
-10. `test-subproc` (2018-01-04)
-11. `test-list-strat` (2018-01-17)
-12. `test-json-config` (2018-01-18)
-13. `test-index-sort-order` (2019-10-29)
-14. `test-install-graph` (2020-06-23)
+This section needs to be filled in. It should be a list of unit tests from the
+original serovers repository listed in order of chronological age in that
+original repository. That way, we'll port the oldest tests first. This is a
+relatively small library, so we should be able to test things relatively quickly
+and not get bogged down if we do them in the wrong order so much. The main thing
+is to ensure a one-to-one relationship between the old tests in clojure and the
+new ones in common lisp. See the AGENTS.md file in the `dsolv` repo for an
+example of how this section should look, then edit this section and fill it in.
 
 ### Process for Each Test
 
@@ -205,18 +178,11 @@ Use `defgeneric` + `defmethod` only when methods dispatch on multiple types
 6. `bd dolt push` to sync progress
 
 ### Build & Run
-
-* **Building the executable**:
-
-```bash
-# Build executable
-ros build com.djhaskin.svers.ros
-```
-
-* **Running tests**: Use `cl-mcp` mcp server to run `(asdf:test-system ...)`.
-  NEVER use bash (`ros` or `sbcl`) to call lisp stuff (EXCEPT to call `ros
-  build`). It often ends with the process dropping into the debugger and hosing
-  the session.
+There is no executable to build, as this is only a library, not a command line
+tool like `dsolv` is. However, running tests is the same: use `cl-mcp` mcp
+server to run `(asdf:test-system ...)`. NEVER use bash (`ros` or `sbcl`) to call
+lisp stuff. It often ends with the process dropping
+into the debugger and hosing the session.
 
 ### Critical Rules
 
@@ -245,3 +211,51 @@ When ending a work session, you MUST complete ALL steps below:
 7. **Hand off** — provide context for next session
 
 **CRITICAL:** Work is NOT complete until `git push` succeeds. NEVER stop before pushing.
+
+<!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:7510c1e2 -->
+## Beads Issue Tracker
+
+This project uses **bd (beads)** for issue tracking. Run `bd prime` to see full workflow context and commands.
+
+### Quick Reference
+
+```bash
+bd ready              # Find available work
+bd show <id>          # View issue details
+bd update <id> --claim  # Claim work
+bd close <id>         # Complete work
+```
+
+### Rules
+
+- Use `bd` for ALL task tracking — do NOT use TodoWrite, TaskCreate, or markdown TODO lists
+- Run `bd prime` for detailed command reference and session close protocol
+- Use `bd remember` for persistent knowledge — do NOT use MEMORY.md files
+
+**Architecture in one line:** issues live in a local Dolt DB; sync uses `refs/dolt/data` on your git remote; `.beads/issues.jsonl` is a passive export. See https://github.com/gastownhall/beads/blob/main/docs/SYNC_CONCEPTS.md for details and anti-patterns.
+
+## Session Completion
+
+**When ending a work session**, you MUST complete ALL steps below. Work is NOT complete until `git push` succeeds.
+
+**MANDATORY WORKFLOW:**
+
+1. **File issues for remaining work** - Create issues for anything that needs follow-up
+2. **Run quality gates** (if code changed) - Tests, linters, builds
+3. **Update issue status** - Close finished work, update in-progress items
+4. **PUSH TO REMOTE** - This is MANDATORY:
+   ```bash
+   git pull --rebase
+   git push
+   git status  # MUST show "up to date with origin"
+   ```
+5. **Clean up** - Clear stashes, prune remote branches
+6. **Verify** - All changes committed AND pushed
+7. **Hand off** - Provide context for next session
+
+**CRITICAL RULES:**
+- Work is NOT complete until `git push` succeeds
+- NEVER stop before pushing - that leaves work stranded locally
+- NEVER say "ready to push when you are" - YOU must push
+- If push fails, resolve and retry until it succeeds
+<!-- END BEADS INTEGRATION -->
