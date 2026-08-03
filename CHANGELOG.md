@@ -14,4 +14,4 @@ All notable changes to this project will be documented in this file.
 - Python PEP 440 version comparison with local version parts
   (`python-vercmp`, `python-normalize`)
 - Naive/punctuation-separated version comparison (`naive-vercmp`)
-- Comprehensive test suite with 293 parachute tests
+- Comprehensive test suite with 294 parachute tests
