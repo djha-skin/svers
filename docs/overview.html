@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>svers: Version Comparison Library</title>
+    <link rel="stylesheet" href="static/style.css"/>
+    <link rel="stylesheet" href="static/highlight.css"/>
+    <script src="static/highlight.js"></script>
+    <script src="static/load-mathjax.js" async></script>
+  </head>
+  <body>
+    <h1 class="doc-title">svers: Version Comparison Library</h1>
+    <article id="article" data-section="overview">
+      <main class="codex-section">
+        <p>svers is a Common Lisp library for version comparison. It supports multiple
+        version comparison schemes including <strong>Debian</strong>, <strong>Maven</strong>,
+        <strong>RPM</strong>, <strong>SemVer 2.0</strong>, <strong>RubyGem</strong>,
+        <strong>Python (PEP 440)</strong>, and <strong>Naive</strong> (punctuation-separated parts).</p>
+
+        <p>The key insight: by using the Debian version comparison algorithm under the
+        hood and simply normalizing version numbers from other schemes so that they
+        compare correctly, (almost) all of the version comparison algorithms can be
+        improved by optimizing just the Debian version comparison algorithm.</p>
+
+        <p>This is a port of the <a href="https://gitlab.com/djhaskin987/serovers">serovers</a>
+        Clojure library.</p>
+      </main>
+    </article>
+    <footer>
+      <div class="info">
+        Created with <a href="https://github.com/CommonDoc/codex">Codex</a>.
+      </div>
+    </footer>
+    <script>
+     HighlightLisp.highlight_auto();
+    </script>
+  </body>
+</html>

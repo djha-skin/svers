@@ -1,0 +1,226 @@
+@begin(section)
+
+@title(Overview)
+
+svers is a Common Lisp library for version comparison. It supports multiple
+version comparison schemes.
+
+This document is available as a
+@link[uri="https://djha-skin.github.io/svers/manual.pdf"](PDF
+document).
+
+@begin(section)
+@title(How It Works)
+
+The key insight: by using the @link[uri="https://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Version"](Debian version comparison algorithm)
+under the hood and simply normalizing version numbers from other schemes so
+that they compare correctly, (almost) all of the version comparison algorithms
+can be improved by optimizing just the Debian version comparison algorithm.
+
+This architecture also makes it easy to add and maintain new version comparison
+algorithms &mdash; just write a normalization function.
+
+@b(Note on liberality:) svers is liberal in what it accepts. If you compare two
+versions using @c(semver-vercmp) but one is not semver-compliant, svers will do
+its best instead of failing. This is important because package version numbers
+are set by maintainers, and it would be bad to break a build over a
+technicality.
+
+@end(section)
+
+@begin(section)
+@title(Usage)
+
+@begin[lang=lisp](code)
+(asdf:load-system "com.djhaskin.svers")
+(use-package :com.djhaskin.svers)
+
+;; Debian version comparison
+(debian-vercmp "1.2.3~rc1" "1.2.3")  ;; => -1 (rc1 < release)
+
+;; Maven
+(maven-vercmp "1.0.0-alpha" "1.0.0-beta")  ;; => -1
+
+;; RPM
+(rpm-vercmp "1.0010" "1.9")  ;; => 1 (1.0010 > 1.9)
+
+;; SemVer
+(semver-vercmp "1.0.0-alpha" "1.0.0")  ;; => -1
+
+;; RubyGem
+(rubygem-vercmp "1.0.a10" "1.0.a9")  ;; => 1
+
+;; Python (PEP 440)
+(python-vercmp "1.0a1" "1.0b1")  ;; => -1 (alpha < beta)
+
+;; Naive (punctuation-separated parts)
+(naive-vercmp "1.2.0" "1.2")  ;; => 1
+@end(code)
+
+All comparison functions return:
+@begin(list)
+@(item) @b(Negative) if the first argument is older/less than the second
+@(item) @b(Zero) if they are equal
+@(item) @b(Positive) if the first argument is newer/greater than the second
+@end(list)
+
+@end(section)
+
+@begin(section)
+@title(Version Schemes)
+
+@begin(section)
+@title(Debian)
+
+Full epoch and revision support per the
+@link[uri="https://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Version"](Debian Policy Manual).
+
+@begin[lang=lisp](code)
+(debian-vercmp "1:2.0-1" "1:1.9-2")  ;; => 1 (epoch 1 same, 2.0 > 1.9)
+(debian-vercmp "1.2.3~rc1" "1.2.3")  ;; => -1 (rc1 < release)
+(debian-vercmp "1.2.3-1" "1.2.3-2")  ;; => -1 (revision 1 < 2)
+@end(code)
+
+@end(section)
+
+@begin(section)
+@title(Maven)
+
+Supports qualifiers: @c(alpha), @c(beta), @c(milestone), @c(rc),
+@c(snapshot), @c(ga), @c(final), @c(stable).
+
+@begin[lang=lisp](code)
+(maven-vercmp "1.0.0-alpha" "1.0.0-beta")       ;; => -1
+(maven-vercmp "1.0.0-rc1" "1.0.0")              ;; => -1
+(maven-vercmp "1.0.0-snapshot" "1.0.0-alpha")   ;; => -1
+(maven-vercmp "1.0.0" "1.0.0-ga")               ;; => 0 (ga = release)
+@end(code)
+
+@end(section)
+
+@begin(section)
+@title(RPM)
+
+Fedora/RPM version comparison.
+
+@begin[lang=lisp](code)
+(rpm-vercmp "1.0010" "1.9")    ;; => 1 (1.0010 > 1.9)
+(rpm-vercmp "2.0.1" "2.0.1a")  ;; => 1 (numeric > alpha)
+@end(code)
+
+@end(section)
+
+@begin(section)
+@title(SemVer 2.0)
+
+@link[uri="http://semver.org"](SemVer 2.0) support, including build metadata
+ignoring and prerelease ordering.
+
+@begin[lang=lisp](code)
+(semver-vercmp "1.0.0-alpha" "1.0.0")      ;; => -1
+(semver-vercmp "1.0.0+build1" "1.0.0")     ;; => 0 (build metadata ignored)
+(semver-vercmp "1.0.0-alpha" "1.0.0-beta")  ;; => -1
+@end(code)
+
+@end(section)
+
+@begin(section)
+@title(RubyGem)
+
+Ruby gem version comparison.
+
+@begin[lang=lisp](code)
+(rubygem-vercmp "1.0.a10" "1.0.a9")  ;; => 1
+(rubygem-vercmp "1.0.0" "1.0.0.a")   ;; => -1 (prerelease)
+@end(code)
+
+@end(section)
+
+@begin(section)
+@title(Python / PEP 440)
+
+Full @link[uri="https://www.python.org/dev/peps/pep-0440/"](PEP 440) support,
+including local versions.
+
+@begin[lang=lisp](code)
+(python-vercmp "1.0a1" "1.0b1")          ;; => -1 (alpha < beta)
+(python-vercmp "1.0" "1.0+local")        ;; => -1 (local version newer)
+(python-vercmp "1.0+local1" "1.0+local2") ;; => -1
+(python-vercmp "1.0.dev1" "1.0a1")       ;; => -1 (dev < alpha)
+@end(code)
+
+@end(section)
+
+@begin(section)
+@title(Naive)
+
+Punctuation-separated parts comparison. This is the old rpmvercmp algorithm,
+used for Python local version parts.
+
+@begin[lang=lisp](code)
+(naive-vercmp "1.2.0" "1.2")    ;; => 1
+(naive-vercmp "1.2.a" "1.2.b")  ;; => -1
+@end(code)
+
+@end(section)
+
+@end(section)
+
+@end(section)
+
+@begin(section)
+@title(API Reference)
+
+This section details the API provided by svers.
+
+@cl:with-package[name="com.djhaskin.svers"](
+@begin(section)
+@title(@c(debian-vercmp))
+@cl:doc(function debian-vercmp)
+@end(section)
+@begin(section)
+@title(@c(maven-normalize))
+@cl:doc(function maven-normalize)
+@end(section)
+@begin(section)
+@title(@c(maven-vercmp))
+@cl:doc(function maven-vercmp)
+@end(section)
+@begin(section)
+@title(@c(rpm-normalize))
+@cl:doc(function rpm-normalize)
+@end(section)
+@begin(section)
+@title(@c(rpm-vercmp))
+@cl:doc(function rpm-vercmp)
+@end(section)
+@begin(section)
+@title(@c(semver-normalize))
+@cl:doc(function semver-normalize)
+@end(section)
+@begin(section)
+@title(@c(semver-vercmp))
+@cl:doc(function semver-vercmp)
+@end(section)
+@begin(section)
+@title(@c(rubygem-normalize))
+@cl:doc(function rubygem-normalize)
+@end(section)
+@begin(section)
+@title(@c(rubygem-vercmp))
+@cl:doc(function rubygem-vercmp)
+@end(section)
+@begin(section)
+@title(@c(python-normalize))
+@cl:doc(function python-normalize)
+@end(section)
+@begin(section)
+@title(@c(python-vercmp))
+@cl:doc(function python-vercmp)
+@end(section)
+@begin(section)
+@title(@c(naive-vercmp))
+@cl:doc(function naive-vercmp)
+@end(section)
+)
+@end(section)

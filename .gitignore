@@ -11,3 +11,9 @@
 
 # OCICL downloaded system code (commit ocicl.csv, not ocicl/)
 ocicl/
+
+# Generated documentation build output
+docs/build/
+
+# LaTeX missfont log
+missfont.log

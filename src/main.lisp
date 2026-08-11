@@ -145,7 +145,13 @@
   fully supported.
 
   All other vercmp algorithms in svers are implemented in terms of this
-  function."
+  function.
+
+  Examples:
+
+    (debian-vercmp \"1:2.0-1\" \"1:1.9-2\")  ;; => 1
+    (debian-vercmp \"1.2.3~rc1\" \"1.2.3\")   ;; => -1
+    (debian-vercmp \"1.2.3-1\" \"1.2.3-2\")   ;; => -1"
   (let* ((a-epoch-result (epoch a))
          (a-epoch (first a-epoch-result))
          (a-vers (second a-epoch-result))
@@ -159,7 +165,15 @@
 ;;; ─── Maven version comparison ──────────────────────────────────────────────
 
 (defun maven-normalize (vers)
-  "Convert a Maven version number to a Debian version number."
+  "Convert a Maven version number to a Debian version number.
+
+  Normalizes Maven qualifiers: alpha, beta, milestone, rc, snapshot, ga,
+  final, and stable.
+
+  Examples:
+
+    (maven-normalize \"1.0.0-alpha\")  ;; => \"1.0.0~~alpha\"
+    (maven-normalize \"1.0.0-rc1\")    ;; => \"1.0.0~~rc1\""
   (let ((it vers))
     (setf it (re:regex-replace-all
                "[!-/:-@\\[-\\`{-}]+([Aa][Ll][Pp][Hh][Aa]|[Aa])" it "~~alpha"))
@@ -186,13 +200,30 @@
     it))
 
 (defun maven-vercmp (a b)
-  "Compare two Maven version numbers."
+  "Compare two Maven version numbers.
+
+  Calls maven-normalize on each version and then returns the debian-vercmp
+  of the results.
+
+  Examples:
+
+    (maven-vercmp \"1.0.0-alpha\" \"1.0.0-beta\")     ;; => -1
+    (maven-vercmp \"1.0.0-rc1\" \"1.0.0\")            ;; => -1
+    (maven-vercmp \"1.0.0-snapshot\" \"1.0.0-alpha\") ;; => -1
+    (maven-vercmp \"1.0.0\" \"1.0.0-ga\")             ;; => 0"
   (debian-vercmp (maven-normalize a) (maven-normalize b)))
 
 ;;; ─── RPM version comparison ────────────────────────────────────────────────
 
 (defun rpm-normalize (vers)
-  "Convert an RPM version number to a Debian version number."
+  "Convert an RPM version number to a Debian version number.
+
+  Replaces punctuation with dots and merges adjacent letter-digit groups.
+
+  Examples:
+
+    (rpm-normalize \"1.0010\")  ;; => \"1.0010\"
+    (rpm-normalize \"2.0.1a\")  ;; => \"2.0.1a\""
   (let ((it vers))
     (setf it (re:regex-replace-all "[!-/:-@\\[-\\`{-}]+" it "."))
     (setf it (re:regex-replace-all "([a-zA-Z]+)\\.([0-9]+)" it "\\1\\2"))
@@ -200,26 +231,59 @@
     it))
 
 (defun rpm-vercmp (a b)
-  "Compare two RPM version numbers."
+  "Compare two RPM version numbers.
+
+  Calls rpm-normalize on each version and then returns the debian-vercmp
+  of the results.
+
+  Examples:
+
+    (rpm-vercmp \"1.0010\" \"1.9\")     ;; => 1
+    (rpm-vercmp \"2.0.1\" \"2.0.1a\")   ;; => 1"
   (debian-vercmp (rpm-normalize a) (rpm-normalize b)))
 
 ;;; ─── Semver version comparison ─────────────────────────────────────────────
 
 (defun semver-normalize (vers)
-  "Convert a SemVer version number to a Debian version number."
+  "Convert a SemVer version number to a Debian version number.
+
+  Strips build metadata (everything after +) and converts hyphens to tildes
+  for prerelease handling.
+
+  Examples:
+
+    (semver-normalize \"1.0.0-alpha\")      ;; => \"1.0.0~alpha\"
+    (semver-normalize \"1.0.0+build1\")     ;; => \"1.0.0\""
   (let ((it vers))
     (setf it (re:regex-replace-all "\\+.*$" it ""))
     (setf it (re:regex-replace-all "-" it "~"))
     it))
 
 (defun semver-vercmp (a b)
-  "Compare two SemVer version numbers."
+  "Compare two SemVer version numbers.
+
+  Calls semver-normalize on each version and then returns the debian-vercmp
+  of the results. Build metadata is ignored for comparison.
+
+  Examples:
+
+    (semver-vercmp \"1.0.0-alpha\" \"1.0.0\")      ;; => -1
+    (semver-vercmp \"1.0.0+build1\" \"1.0.0\")     ;; => 0
+    (semver-vercmp \"1.0.0-alpha\" \"1.0.0-beta\")  ;; => -1"
   (debian-vercmp (semver-normalize a) (semver-normalize b)))
 
 ;;; ─── RubyGem version comparison ────────────────────────────────────────────
 
 (defun rubygem-normalize (vers)
-  "Convert a Ruby Gem version number to a Debian version number."
+  "Convert a Ruby Gem version number to a Debian version number.
+
+  Inserts dots between digit-letter boundaries and marks prerelease
+  suffixes with a tilde.
+
+  Examples:
+
+    (rubygem-normalize \"1.0.a10\")  ;; => \"1.0~a10\"
+    (rubygem-normalize \"1.0.0.a\")  ;; => \"1.0.0~a\""
   (let ((it vers))
     (setf it (re:regex-replace-all
                "([0-9]+)([a-zA-Z]+)" it "\\1.\\2"))
@@ -230,7 +294,15 @@
     it))
 
 (defun rubygem-vercmp (a b)
-  "Compare two Ruby Gem version numbers."
+  "Compare two Ruby Gem version numbers.
+
+  Calls rubygem-normalize on each version and then returns the debian-vercmp
+  of the results.
+
+  Examples:
+
+    (rubygem-vercmp \"1.0.a10\" \"1.0.a9\")  ;; => 1
+    (rubygem-vercmp \"1.0.0\" \"1.0.0.a\")   ;; => -1"
   (debian-vercmp (rubygem-normalize a) (rubygem-normalize b)))
 
 ;;; ─── Python local part normalization ───────────────────────────────────────
@@ -248,7 +320,17 @@
 ;;; ─── Python version comparison ─────────────────────────────────────────────
 
 (defun python-normalize (vers)
-  "Convert a Python (pip) version number to a Debian version number."
+  "Convert a Python (pip) version number to a Debian version number.
+
+  Follows PEP 440 normalization rules: epoch markers, dev releases,
+  pre-releases (a/b/rc), and post releases.
+
+  Examples:
+
+    (python-normalize \"1.0a1\")     ;; => \"1.0~a1\"
+    (python-normalize \"1.0b1\")     ;; => \"1.0~b1\"
+    (python-normalize \"1.0rc1\")    ;; => \"1.0~rc1\"
+    (python-normalize \"1.0.dev1\")  ;; => \"1.0~~dev1\""
   (let ((it (string-downcase vers)))
     (setf it (re:regex-replace-all "^([0-9]+)!" it "\\1:"))
     (setf it (re:regex-replace-all "\\.post([0-9]+)" it "!~\\1"))
@@ -280,7 +362,16 @@
 
 (defun naive-vercmp (a b)
   "Compare two version numbers separated into parts by punctuation.
-  This is the old rpmvercmp algorithm, used for Python local version parts."
+
+  This is the old rpmvercmp algorithm, used for Python local version parts.
+  Compares each part in turn. If both parts are numeric, compare as numbers.
+  If one part is numeric but the other alphanumeric, the numeric part is
+  newer. If both are alphanumeric, compare lexically.
+
+  Examples:
+
+    (naive-vercmp \"1.2.0\" \"1.2\")    ;; => 1
+    (naive-vercmp \"1.2.a\" \"1.2.b\")  ;; => -1"
   (let ((a-parts (re:split "[!-/:-@\\[-\\`{-}]+" a))
         (b-parts (re:split "[!-/:-@\\[-\\`{-}]+" b)))
     (or (some (lambda (x) (if (not (zerop x)) x nil))
@@ -290,7 +381,20 @@
 ;;; ─── Python version comparison (full) ──────────────────────────────────────
 
 (defun python-vercmp (a b)
-  "Compare two Python (pip) version numbers according to PEP 440."
+  "Compare two Python (pip) version numbers according to PEP 440.
+
+  First compares the public version identifiers using debian-vercmp on
+  python-normalize'd versions. If the public versions are equal and one
+  has a local version identifier, the version with the local identifier
+  is considered newer. If both have local identifiers, they are compared
+  using naive-vercmp.
+
+  Examples:
+
+    (python-vercmp \"1.0a1\" \"1.0b1\")           ;; => -1
+    (python-vercmp \"1.0\" \"1.0+local\")         ;; => -1
+    (python-vercmp \"1.0+local1\" \"1.0+local2\")  ;; => -1
+    (python-vercmp \"1.0.dev1\" \"1.0a1\")        ;; => -1"
   (let* ((a-pub (re:regex-replace "\\+.*$" a ""))
          (b-pub (re:regex-replace "\\+.*$" b ""))
          (pub-result (debian-vercmp (python-normalize a-pub)
