@@ -56,8 +56,11 @@ version comparison schemes.</p><p>This document is available as a
 document</a>.</p><h1 id="how-it-works">How It Works</h1><p>The key insight: by using the <a href="https://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Version">Debian version comparison algorithm</a>
 under the hood and simply normalizing version numbers from other schemes so
 that they compare correctly, (almost) all of the version comparison algorithms
-can be improved by optimizing just the Debian version comparison algorithm.</p><p>This architecture also makes it easy to add and maintain new version comparison
-algorithms &amp;mdash; just write a normalization function.<b>Note on liberality:</b> svers is liberal in what it accepts. If you compare two
+can be improved by optimizing just the Debian version comparison algorithm.</p><p>svers is the Common Lisp port of the <a href="https://djhaskin987.gitlab.io/serovers/">Serovers</a> library
+originally written in Clojure. It supports <code>dsolv</code>
+(<a href="https://github.com/djha-skin/dsolv">https://github.com/djha-skin/dsolv</a>), the Common Lisp
+package resolver.</p><p>This architecture also makes it easy to add and maintain new version comparison
+algorithms — just write a normalization function.<b>Note on liberality:</b></p><p>svers is liberal in what it accepts. If you compare two
 versions using <code>semver-vercmp</code> but one is not semver-compliant, svers will do
 its best instead of failing. This is important because package version numbers
 are set by maintainers, and it would be bad to break a build over a
@@ -85,7 +88,7 @@ technicality.</p><h1 id="usage">Usage</h1><pre><code class="lisp">(asdf:load-sys
 ;; Naive (punctuation-separated parts)
 (naive-vercmp &quot;1.2.0&quot; &quot;1.2&quot;)  ;; =&gt; 1
 </code></pre><p>All comparison functions return:
-</p><ul><li>(item)</li><li>Negative</li><li>(item)</li><li>Zero</li><li>(item)</li><li>Positive</li></ul><h1 id="version-schemes">Version Schemes</h1><h2 id="debian">Debian</h2><p>Full epoch and revision support per the
+</p><ul><li><b>Negative</b> if the first argument is older/less than the second</li><li><b>Zero</b> if they are equal</li><li><b>Positive</b> if the first argument is newer/greater than the second</li></ul><h1 id="version-schemes">Version Schemes</h1><h2 id="debian">Debian</h2><p>Full epoch and revision support per the
 <a href="https://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Version">Debian Policy Manual</a>.</p><pre><code class="lisp">(debian-vercmp &quot;1:2.0-1&quot; &quot;1:1.9-2&quot;)  ;; =&gt; 1 (epoch 1 same, 2.0 &gt; 1.9)
 (debian-vercmp &quot;1.2.3~rc1&quot; &quot;1.2.3&quot;)  ;; =&gt; -1 (rc1 &lt; release)
 (debian-vercmp &quot;1.2.3-1&quot; &quot;1.2.3-2&quot;)  ;; =&gt; -1 (revision 1 &lt; 2)

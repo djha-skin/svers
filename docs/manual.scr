@@ -17,10 +17,17 @@ under the hood and simply normalizing version numbers from other schemes so
 that they compare correctly, (almost) all of the version comparison algorithms
 can be improved by optimizing just the Debian version comparison algorithm.
 
-This architecture also makes it easy to add and maintain new version comparison
-algorithms &mdash; just write a normalization function.
+svers is the Common Lisp port of the @link[uri="https://djhaskin987.gitlab.io/serovers/"](Serovers) library
+originally written in Clojure. It supports @c(dsolv)
+(@link[uri="https://github.com/djha-skin/dsolv"](https://github.com/djha-skin/dsolv)), the Common Lisp
+package resolver.
 
-@b(Note on liberality:) svers is liberal in what it accepts. If you compare two
+This architecture also makes it easy to add and maintain new version comparison
+algorithms — just write a normalization function.
+
+@b(Note on liberality:)
+
+svers is liberal in what it accepts. If you compare two
 versions using @c(semver-vercmp) but one is not semver-compliant, svers will do
 its best instead of failing. This is important because package version numbers
 are set by maintainers, and it would be bad to break a build over a
@@ -59,9 +66,9 @@ technicality.
 
 All comparison functions return:
 @begin(list)
-@(item) @b(Negative) if the first argument is older/less than the second
-@(item) @b(Zero) if they are equal
-@(item) @b(Positive) if the first argument is newer/greater than the second
+@item(@b(Negative) if the first argument is older/less than the second)
+@item(@b(Zero) if they are equal)
+@item(@b(Positive) if the first argument is newer/greater than the second)
 @end(list)
 
 @end(section)
