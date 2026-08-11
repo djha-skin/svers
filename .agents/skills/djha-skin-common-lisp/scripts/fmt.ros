@@ -1,13 +1,12 @@
 #!/bin/sh
 #|-*- mode:lisp -*-|#
-#|fmt - format and lint Lisp sources. Forked from roswell/fmt.ros, adds style checks.
-exec ros +Q -N roswell -- $0 "$@"
+#|dsolv fmt - format and lint Lisp sources. Forked from roswell/fmt.ros, adds style checks.
+exec ros -Q -N roswell -- $0 "$@"
 |#
 (progn ;;init forms
   (ros:ensure-asdf)
   #+sbcl (require "sb-introspect")
-  (asdf:load-system "cl-ppcre" :verbose nil)
-  (asdf:load-system "cl-indentify" :verbose nil))
+  #+quicklisp (ql:quickload '("cl-indentify" "cl-ppcre") :silent t))
 
 (defpackage :ros.script.fmt.3707812168
   (:use :cl :cl-ppcre))
@@ -161,7 +160,7 @@ exec ros +Q -N roswell -- $0 "$@"
                   (list (asdf:component-pathname c)))
                  (t (list c)))))
       (when *
-        (asdf:load-system * :verbose nil)
+        (ql:quickload * :silent (not (ros:verbose)))
         (register-macro-templates)
         (r (asdf:find-system *))))))
 

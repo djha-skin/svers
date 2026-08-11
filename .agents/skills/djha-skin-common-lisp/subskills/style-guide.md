@@ -60,16 +60,28 @@ Please note the following style guidelines:
 * Only 80 characters per line, please, for any text-based file in the
   repository. Wrap intelligently if you must to follow this rule.
 
-* Use the ros `fmt <file>` script (herein included in the skills' `scripts`
-  folder) to format Lisp source files. It handles consistent indentation
-  automatically. Run it on all source files before committing.
+* Use the skill's `fmt.ros` script (not Roswell's `ros fmt`) to format and
+  lint Lisp source files:
 
-* Use `cl-mcp` MCP server for ALL Lisp operations — loading systems, running
-  tests, editing forms, checking parens, code search. Do NOT use one-off `sbcl`
-  or `ros` commands. The cl-mcp server manages the Lisp image and provides
-  structure-aware tools (`lisp-edit-form`, `lisp-patch-form`, `lisp-read-file`,
-  `repl-eval`, `run-tests`, `lisp-check-parens`, `code-find`, `code-describe`,
-  `code-find-references`).
+  ```sh
+  ros .agents/skills/djha-skin-common-lisp/scripts/fmt.ros [--check] [files...]
+  ```
+
+  It handles consistent indentation automatically (via cl-indentify), strips
+  trailing whitespace, and lints line length, comment style, and file headers.
+  With no files it discovers `src/**/*.lisp` and `tests/**/*.lisp`. Pass
+  `--check` to lint without rewriting. Run it on all source files before
+  committing.
+
+* Use `swanky` CLI for ALL Lisp operations — loading systems, running tests,
+  editing forms, checking parens, code search. Do NOT use one-off `sbcl` or
+  `ros` commands (except `ros build` for executables and `ros init` for
+  script scaffolding). The swanky tool connects to a running swank server
+  and evaluates one form per invocation.
+
+* Run `lisp-check-parens.ros` on Lisp source files before committing to catch
+  unbalanced parentheses. See the [Development Workflow](development-workflow.md)
+  tooling section for usage.
 
 * Use **OCICL** for package management, NOT Qlot or Quicklisp (`ql:quickload`).
   OCICL packages systems as OCI-compliant artifacts distributed via container
