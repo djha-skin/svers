@@ -6,7 +6,8 @@ exec ros -R +Q -- $0 "$@"
 (progn ;;init forms
   (ros:ensure-asdf)
   (asdf:load-system "codex")
-  (asdf:load-system "codex-templates"))
+  (asdf:load-system "codex-templates")
+  (asdf:load-system "com.djhaskin.svers"))
 
 (defpackage :ros.script.build-docs.3943893088
   (:use :cl))
@@ -19,4 +20,6 @@ exec ros -R +Q -- $0 "$@"
     (error (e)
       (format *error-output* "~&Build failed: ~A~%" e)
       (uiop:quit 1))))
+
+(main)
 ;;; vim: set ft=lisp lisp:
