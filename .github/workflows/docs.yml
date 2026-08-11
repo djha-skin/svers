@@ -47,7 +47,7 @@ jobs:
         with:
           path: |
             systems/
-          key: ${{ hashFiles('systems.csv') }}
+          key: ${{ hashFiles('ocicl.csv') }}
 
       - name: Make the docs
         run: |

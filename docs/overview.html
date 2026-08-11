@@ -4,37 +4,123 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>svers: Version Comparison Library</title>
+    <title>
+  Overview &ndash; svers: Version Comparison Library
+</title>
     <link rel="stylesheet" href="static/style.css"/>
-    <link rel="stylesheet" href="static/highlight.css"/>
-    <script src="static/highlight.js"></script>
-    <script src="static/load-mathjax.js" async></script>
+    
+  <link rel="stylesheet" href="static/highlight.css"/>
+  <script src="static/highlight.js"></script>
+  <script src="static/load-mathjax.js" async></script>
+  <style>
+   /* Highlight the current top-level TOC item, and hide the TOC of all other items */
+
+   .toc a[data-node="overview"] {
+       color: #AD3108;
+   }
+
+   .toc ol {
+       display: none;
+   }
+
+   .toc > ol {
+       display: block;
+   }
+
+   .toc li a[data-node="overview"] + ol {
+       display: block;
+   }
+
+   .toc li a[data-node="overview"] + ol li {
+       font-size: 16px;
+       margin: 0 10px;
+   }
+
+   .toc li a[active] + ol li:first-child {
+       margin-top: 5px;
+   }
+  </style>
+
   </head>
   <body>
-    <h1 class="doc-title">svers: Version Comparison Library</h1>
-    <article id="article" data-section="overview">
-      <main class="codex-section">
-        <p>svers is a Common Lisp library for version comparison. It supports multiple
-        version comparison schemes including <strong>Debian</strong>, <strong>Maven</strong>,
-        <strong>RPM</strong>, <strong>SemVer 2.0</strong>, <strong>RubyGem</strong>,
-        <strong>Python (PEP 440)</strong>, and <strong>Naive</strong> (punctuation-separated parts).</p>
+    
+  <h1 class="doc-title">svers: Version Comparison Library » Overview</h1>
+  <article id="article" data-section="overview">
+    <aside>
+      <ol class="toc"><li><a href="overview.html" data-node="overview">Overview</a><ol><li><a href="overview.html#how-it-works" data-node="how-it-works">How It Works</a></li><li><a href="overview.html#usage" data-node="usage">Usage</a></li><li><a href="overview.html#version-schemes" data-node="version-schemes">Version Schemes</a><ol><li><a href="overview.html#debian" data-node="debian">Debian</a></li><li><a href="overview.html#maven" data-node="maven">Maven</a></li><li><a href="overview.html#rpm" data-node="rpm">RPM</a></li><li><a href="overview.html#semver-2.0" data-node="semver-2.0">SemVer 2.0</a></li><li><a href="overview.html#rubygem" data-node="rubygem">RubyGem</a></li><li><a href="overview.html#python---pep-440" data-node="python---pep-440">Python / PEP 440</a></li><li><a href="overview.html#naive" data-node="naive">Naive</a></li></ol></li></ol></li><li><a href="api-reference.html" data-node="api-reference">API Reference</a><ol><li><a href="debian-vercmp.html" data-node="debian-vercmp"><code>debian-vercmp</code></a></li><li><a href="maven-normalize.html" data-node="maven-normalize"><code>maven-normalize</code></a></li><li><a href="maven-vercmp.html" data-node="maven-vercmp"><code>maven-vercmp</code></a></li><li><a href="rpm-normalize.html" data-node="rpm-normalize"><code>rpm-normalize</code></a></li><li><a href="rpm-vercmp.html" data-node="rpm-vercmp"><code>rpm-vercmp</code></a></li><li><a href="semver-normalize.html" data-node="semver-normalize"><code>semver-normalize</code></a></li><li><a href="semver-vercmp.html" data-node="semver-vercmp"><code>semver-vercmp</code></a></li><li><a href="rubygem-normalize.html" data-node="rubygem-normalize"><code>rubygem-normalize</code></a></li><li><a href="rubygem-vercmp.html" data-node="rubygem-vercmp"><code>rubygem-vercmp</code></a></li><li><a href="python-normalize.html" data-node="python-normalize"><code>python-normalize</code></a></li><li><a href="python-vercmp.html" data-node="python-vercmp"><code>python-vercmp</code></a></li><li><a href="naive-vercmp.html" data-node="naive-vercmp"><code>naive-vercmp</code></a></li></ol></li></ol>
+    </aside>
+    <main class="codex-section">
+      <p>svers is a Common Lisp library for version comparison. It supports multiple
+version comparison schemes.</p><p>This document is available as a
+<a href="https://djha-skin.github.io/svers/manual.pdf">PDF
+document</a>.</p><h1 id="how-it-works">How It Works</h1><p>The key insight: by using the <a href="https://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Version">Debian version comparison algorithm</a>
+under the hood and simply normalizing version numbers from other schemes so
+that they compare correctly, (almost) all of the version comparison algorithms
+can be improved by optimizing just the Debian version comparison algorithm.</p><p>This architecture also makes it easy to add and maintain new version comparison
+algorithms &amp;mdash; just write a normalization function.<b>Note on liberality:</b> svers is liberal in what it accepts. If you compare two
+versions using <code>semver-vercmp</code> but one is not semver-compliant, svers will do
+its best instead of failing. This is important because package version numbers
+are set by maintainers, and it would be bad to break a build over a
+technicality.</p><h1 id="usage">Usage</h1><pre><code class="lisp">(asdf:load-system &quot;com.djhaskin.svers&quot;)
+(use-package :com.djhaskin.svers)
 
-        <p>The key insight: by using the Debian version comparison algorithm under the
-        hood and simply normalizing version numbers from other schemes so that they
-        compare correctly, (almost) all of the version comparison algorithms can be
-        improved by optimizing just the Debian version comparison algorithm.</p>
+;; Debian version comparison
+(debian-vercmp &quot;1.2.3~rc1&quot; &quot;1.2.3&quot;)  ;; =&gt; -1 (rc1 &lt; release)
 
-        <p>This is a port of the <a href="https://gitlab.com/djhaskin987/serovers">serovers</a>
-        Clojure library.</p>
-      </main>
-    </article>
-    <footer>
-      <div class="info">
-        Created with <a href="https://github.com/CommonDoc/codex">Codex</a>.
-      </div>
-    </footer>
-    <script>
-     HighlightLisp.highlight_auto();
-    </script>
+;; Maven
+(maven-vercmp &quot;1.0.0-alpha&quot; &quot;1.0.0-beta&quot;)  ;; =&gt; -1
+
+;; RPM
+(rpm-vercmp &quot;1.0010&quot; &quot;1.9&quot;)  ;; =&gt; 1 (1.0010 &gt; 1.9)
+
+;; SemVer
+(semver-vercmp &quot;1.0.0-alpha&quot; &quot;1.0.0&quot;)  ;; =&gt; -1
+
+;; RubyGem
+(rubygem-vercmp &quot;1.0.a10&quot; &quot;1.0.a9&quot;)  ;; =&gt; 1
+
+;; Python (PEP 440)
+(python-vercmp &quot;1.0a1&quot; &quot;1.0b1&quot;)  ;; =&gt; -1 (alpha &lt; beta)
+
+;; Naive (punctuation-separated parts)
+(naive-vercmp &quot;1.2.0&quot; &quot;1.2&quot;)  ;; =&gt; 1
+</code></pre><p>All comparison functions return:
+</p><ul><li>(item)</li><li>Negative</li><li>(item)</li><li>Zero</li><li>(item)</li><li>Positive</li></ul><h1 id="version-schemes">Version Schemes</h1><h2 id="debian">Debian</h2><p>Full epoch and revision support per the
+<a href="https://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Version">Debian Policy Manual</a>.</p><pre><code class="lisp">(debian-vercmp &quot;1:2.0-1&quot; &quot;1:1.9-2&quot;)  ;; =&gt; 1 (epoch 1 same, 2.0 &gt; 1.9)
+(debian-vercmp &quot;1.2.3~rc1&quot; &quot;1.2.3&quot;)  ;; =&gt; -1 (rc1 &lt; release)
+(debian-vercmp &quot;1.2.3-1&quot; &quot;1.2.3-2&quot;)  ;; =&gt; -1 (revision 1 &lt; 2)
+</code></pre><h2 id="maven">Maven</h2><p>Supports qualifiers: <code>alpha</code>, <code>beta</code>, <code>milestone</code>, <code>rc</code>,
+<code>snapshot</code>, <code>ga</code>, <code>final</code>, <code>stable</code>.</p><pre><code class="lisp">(maven-vercmp &quot;1.0.0-alpha&quot; &quot;1.0.0-beta&quot;)       ;; =&gt; -1
+(maven-vercmp &quot;1.0.0-rc1&quot; &quot;1.0.0&quot;)              ;; =&gt; -1
+(maven-vercmp &quot;1.0.0-snapshot&quot; &quot;1.0.0-alpha&quot;)   ;; =&gt; -1
+(maven-vercmp &quot;1.0.0&quot; &quot;1.0.0-ga&quot;)               ;; =&gt; 0 (ga = release)
+</code></pre><h2 id="rpm">RPM</h2><p>Fedora/RPM version comparison.</p><pre><code class="lisp">(rpm-vercmp &quot;1.0010&quot; &quot;1.9&quot;)    ;; =&gt; 1 (1.0010 &gt; 1.9)
+(rpm-vercmp &quot;2.0.1&quot; &quot;2.0.1a&quot;)  ;; =&gt; 1 (numeric &gt; alpha)
+</code></pre><h2 id="semver-2.0">SemVer 2.0</h2><p><a href="http://semver.org">SemVer 2.0</a> support, including build metadata
+ignoring and prerelease ordering.</p><pre><code class="lisp">(semver-vercmp &quot;1.0.0-alpha&quot; &quot;1.0.0&quot;)      ;; =&gt; -1
+(semver-vercmp &quot;1.0.0+build1&quot; &quot;1.0.0&quot;)     ;; =&gt; 0 (build metadata ignored)
+(semver-vercmp &quot;1.0.0-alpha&quot; &quot;1.0.0-beta&quot;)  ;; =&gt; -1
+</code></pre><h2 id="rubygem">RubyGem</h2><p>Ruby gem version comparison.</p><pre><code class="lisp">(rubygem-vercmp &quot;1.0.a10&quot; &quot;1.0.a9&quot;)  ;; =&gt; 1
+(rubygem-vercmp &quot;1.0.0&quot; &quot;1.0.0.a&quot;)   ;; =&gt; -1 (prerelease)
+</code></pre><h2 id="python---pep-440">Python / PEP 440</h2><p>Full <a href="https://www.python.org/dev/peps/pep-0440/">PEP 440</a> support,
+including local versions.</p><pre><code class="lisp">(python-vercmp &quot;1.0a1&quot; &quot;1.0b1&quot;)          ;; =&gt; -1 (alpha &lt; beta)
+(python-vercmp &quot;1.0&quot; &quot;1.0+local&quot;)        ;; =&gt; -1 (local version newer)
+(python-vercmp &quot;1.0+local1&quot; &quot;1.0+local2&quot;) ;; =&gt; -1
+(python-vercmp &quot;1.0.dev1&quot; &quot;1.0a1&quot;)       ;; =&gt; -1 (dev &lt; alpha)
+</code></pre><h2 id="naive">Naive</h2><p>Punctuation-separated parts comparison. This is the old rpmvercmp algorithm,
+used for Python local version parts.</p><pre><code class="lisp">(naive-vercmp &quot;1.2.0&quot; &quot;1.2&quot;)    ;; =&gt; 1
+(naive-vercmp &quot;1.2.a&quot; &quot;1.2.b&quot;)  ;; =&gt; -1
+</code></pre>
+    </main>
+  </article>
+  <footer>
+    <div class="info">
+      Created with <a href="https://github.com/CommonDoc/codex">Codex</a>.
+    </div>
+  </footer>
+  <script>
+   HighlightLisp.highlight_auto();
+  </script>
+
   </body>
 </html>

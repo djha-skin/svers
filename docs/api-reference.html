@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+  API Reference &ndash; svers: Version Comparison Library
+</title>
+    <link rel="stylesheet" href="static/style.css"/>
+    
+  <link rel="stylesheet" href="static/highlight.css"/>
+  <script src="static/highlight.js"></script>
+  <script src="static/load-mathjax.js" async></script>
+  <style>
+   /* Highlight the current top-level TOC item, and hide the TOC of all other items */
+
+   .toc a[data-node="api-reference"] {
+       color: #AD3108;
+   }
+
+   .toc ol {
+       display: none;
+   }
+
+   .toc > ol {
+       display: block;
+   }
+
+   .toc li a[data-node="api-reference"] + ol {
+       display: block;
+   }
+
+   .toc li a[data-node="api-reference"] + ol li {
+       font-size: 16px;
+       margin: 0 10px;
+   }
+
+   .toc li a[active] + ol li:first-child {
+       margin-top: 5px;
+   }
+  </style>
+
+  </head>
+  <body>
+    
+  <h1 class="doc-title">svers: Version Comparison Library » API Reference</h1>
+  <article id="article" data-section="api-reference">
+    <aside>
+      <ol class="toc"><li><a href="overview.html" data-node="overview">Overview</a><ol><li><a href="overview.html#how-it-works" data-node="how-it-works">How It Works</a></li><li><a href="overview.html#usage" data-node="usage">Usage</a></li><li><a href="overview.html#version-schemes" data-node="version-schemes">Version Schemes</a><ol><li><a href="overview.html#debian" data-node="debian">Debian</a></li><li><a href="overview.html#maven" data-node="maven">Maven</a></li><li><a href="overview.html#rpm" data-node="rpm">RPM</a></li><li><a href="overview.html#semver-2.0" data-node="semver-2.0">SemVer 2.0</a></li><li><a href="overview.html#rubygem" data-node="rubygem">RubyGem</a></li><li><a href="overview.html#python---pep-440" data-node="python---pep-440">Python / PEP 440</a></li><li><a href="overview.html#naive" data-node="naive">Naive</a></li></ol></li></ol></li><li><a href="api-reference.html" data-node="api-reference">API Reference</a><ol><li><a href="debian-vercmp.html" data-node="debian-vercmp"><code>debian-vercmp</code></a></li><li><a href="maven-normalize.html" data-node="maven-normalize"><code>maven-normalize</code></a></li><li><a href="maven-vercmp.html" data-node="maven-vercmp"><code>maven-vercmp</code></a></li><li><a href="rpm-normalize.html" data-node="rpm-normalize"><code>rpm-normalize</code></a></li><li><a href="rpm-vercmp.html" data-node="rpm-vercmp"><code>rpm-vercmp</code></a></li><li><a href="semver-normalize.html" data-node="semver-normalize"><code>semver-normalize</code></a></li><li><a href="semver-vercmp.html" data-node="semver-vercmp"><code>semver-vercmp</code></a></li><li><a href="rubygem-normalize.html" data-node="rubygem-normalize"><code>rubygem-normalize</code></a></li><li><a href="rubygem-vercmp.html" data-node="rubygem-vercmp"><code>rubygem-vercmp</code></a></li><li><a href="python-normalize.html" data-node="python-normalize"><code>python-normalize</code></a></li><li><a href="python-vercmp.html" data-node="python-vercmp"><code>python-vercmp</code></a></li><li><a href="naive-vercmp.html" data-node="naive-vercmp"><code>naive-vercmp</code></a></li></ol></li></ol>
+    </aside>
+    <main class="codex-section">
+      <p>This section details the API provided by svers.
+<h1 id="debian-vercmp"><code>debian-vercmp</code></h1>
+<div class="codex-doc-node codex-operator codex-function"><code class="codex-name">debian-vercmp</code><code class="codex-lambda-list">(a b)</code><div class="codex-docstring"><p>Compare two Debian version numbers according to the Debian Policy Manual.</p><p>  Epoch numbers, upstream versions, and Debian revision version parts are
+  fully supported.</p><p>  All other vercmp algorithms in svers are implemented in terms of this
+  function.</p><p>  Examples:</p><p>    (debian-vercmp &quot;1:2.0-1&quot; &quot;1:1.9-2&quot;)  ;; =&gt; 1
+    (debian-vercmp &quot;1.2.3~rc1&quot; &quot;1.2.3&quot;)   ;; =&gt; -1
+    (debian-vercmp &quot;1.2.3-1&quot; &quot;1.2.3-2&quot;)   ;; =&gt; -1</p></div></div>
+
+<h1 id="maven-normalize"><code>maven-normalize</code></h1>
+<div class="codex-doc-node codex-operator codex-function"><code class="codex-name">maven-normalize</code><code class="codex-lambda-list">(vers)</code><div class="codex-docstring"><p>Convert a Maven version number to a Debian version number.</p><p>  Normalizes Maven qualifiers: alpha, beta, milestone, rc, snapshot, ga,
+  final, and stable.</p><p>  Examples:</p><p>    (maven-normalize &quot;1.0.0-alpha&quot;)  ;; =&gt; &quot;1.0.0~~alpha&quot;
+    (maven-normalize &quot;1.0.0-rc1&quot;)    ;; =&gt; &quot;1.0.0~~rc1&quot;</p></div></div>
+
+<h1 id="maven-vercmp"><code>maven-vercmp</code></h1>
+<div class="codex-doc-node codex-operator codex-function"><code class="codex-name">maven-vercmp</code><code class="codex-lambda-list">(a b)</code><div class="codex-docstring"><p>Compare two Maven version numbers.</p><p>  Calls maven-normalize on each version and then returns the debian-vercmp
+  of the results.</p><p>  Examples:</p><p>    (maven-vercmp &quot;1.0.0-alpha&quot; &quot;1.0.0-beta&quot;)     ;; =&gt; -1
+    (maven-vercmp &quot;1.0.0-rc1&quot; &quot;1.0.0&quot;)            ;; =&gt; -1
+    (maven-vercmp &quot;1.0.0-snapshot&quot; &quot;1.0.0-alpha&quot;) ;; =&gt; -1
+    (maven-vercmp &quot;1.0.0&quot; &quot;1.0.0-ga&quot;)             ;; =&gt; 0</p></div></div>
+
+<h1 id="rpm-normalize"><code>rpm-normalize</code></h1>
+<div class="codex-doc-node codex-operator codex-function"><code class="codex-name">rpm-normalize</code><code class="codex-lambda-list">(vers)</code><div class="codex-docstring"><p>Convert an RPM version number to a Debian version number.</p><p>  Replaces punctuation with dots and merges adjacent letter-digit groups.</p><p>  Examples:</p><p>    (rpm-normalize &quot;1.0010&quot;)  ;; =&gt; &quot;1.0010&quot;
+    (rpm-normalize &quot;2.0.1a&quot;)  ;; =&gt; &quot;2.0.1a&quot;</p></div></div>
+
+<h1 id="rpm-vercmp"><code>rpm-vercmp</code></h1>
+<div class="codex-doc-node codex-operator codex-function"><code class="codex-name">rpm-vercmp</code><code class="codex-lambda-list">(a b)</code><div class="codex-docstring"><p>Compare two RPM version numbers.</p><p>  Calls rpm-normalize on each version and then returns the debian-vercmp
+  of the results.</p><p>  Examples:</p><p>    (rpm-vercmp &quot;1.0010&quot; &quot;1.9&quot;)     ;; =&gt; 1
+    (rpm-vercmp &quot;2.0.1&quot; &quot;2.0.1a&quot;)   ;; =&gt; 1</p></div></div>
+
+<h1 id="semver-normalize"><code>semver-normalize</code></h1>
+<div class="codex-doc-node codex-operator codex-function"><code class="codex-name">semver-normalize</code><code class="codex-lambda-list">(vers)</code><div class="codex-docstring"><p>Convert a SemVer version number to a Debian version number.</p><p>  Strips build metadata (everything after +) and converts hyphens to tildes
+  for prerelease handling.</p><p>  Examples:</p><p>    (semver-normalize &quot;1.0.0-alpha&quot;)      ;; =&gt; &quot;1.0.0~alpha&quot;
+    (semver-normalize &quot;1.0.0+build1&quot;)     ;; =&gt; &quot;1.0.0&quot;</p></div></div>
+
+<h1 id="semver-vercmp"><code>semver-vercmp</code></h1>
+<div class="codex-doc-node codex-operator codex-function"><code class="codex-name">semver-vercmp</code><code class="codex-lambda-list">(a b)</code><div class="codex-docstring"><p>Compare two SemVer version numbers.</p><p>  Calls semver-normalize on each version and then returns the debian-vercmp
+  of the results. Build metadata is ignored for comparison.</p><p>  Examples:</p><p>    (semver-vercmp &quot;1.0.0-alpha&quot; &quot;1.0.0&quot;)      ;; =&gt; -1
+    (semver-vercmp &quot;1.0.0+build1&quot; &quot;1.0.0&quot;)     ;; =&gt; 0
+    (semver-vercmp &quot;1.0.0-alpha&quot; &quot;1.0.0-beta&quot;)  ;; =&gt; -1</p></div></div>
+
+<h1 id="rubygem-normalize"><code>rubygem-normalize</code></h1>
+<div class="codex-doc-node codex-operator codex-function"><code class="codex-name">rubygem-normalize</code><code class="codex-lambda-list">(vers)</code><div class="codex-docstring"><p>Convert a Ruby Gem version number to a Debian version number.</p><p>  Inserts dots between digit-letter boundaries and marks prerelease
+  suffixes with a tilde.</p><p>  Examples:</p><p>    (rubygem-normalize &quot;1.0.a10&quot;)  ;; =&gt; &quot;1.0~a10&quot;
+    (rubygem-normalize &quot;1.0.0.a&quot;)  ;; =&gt; &quot;1.0.0~a&quot;</p></div></div>
+
+<h1 id="rubygem-vercmp"><code>rubygem-vercmp</code></h1>
+<div class="codex-doc-node codex-operator codex-function"><code class="codex-name">rubygem-vercmp</code><code class="codex-lambda-list">(a b)</code><div class="codex-docstring"><p>Compare two Ruby Gem version numbers.</p><p>  Calls rubygem-normalize on each version and then returns the debian-vercmp
+  of the results.</p><p>  Examples:</p><p>    (rubygem-vercmp &quot;1.0.a10&quot; &quot;1.0.a9&quot;)  ;; =&gt; 1
+    (rubygem-vercmp &quot;1.0.0&quot; &quot;1.0.0.a&quot;)   ;; =&gt; -1</p></div></div>
+
+<h1 id="python-normalize"><code>python-normalize</code></h1>
+<div class="codex-doc-node codex-operator codex-function"><code class="codex-name">python-normalize</code><code class="codex-lambda-list">(vers)</code><div class="codex-docstring"><p>Convert a Python (pip) version number to a Debian version number.</p><p>  Follows PEP 440 normalization rules: epoch markers, dev releases,
+  pre-releases (a/b/rc), and post releases.</p><p>  Examples:</p><p>    (python-normalize &quot;1.0a1&quot;)     ;; =&gt; &quot;1.0~a1&quot;
+    (python-normalize &quot;1.0b1&quot;)     ;; =&gt; &quot;1.0~b1&quot;
+    (python-normalize &quot;1.0rc1&quot;)    ;; =&gt; &quot;1.0~rc1&quot;
+    (python-normalize &quot;1.0.dev1&quot;)  ;; =&gt; &quot;1.0~~dev1&quot;</p></div></div>
+
+<h1 id="python-vercmp"><code>python-vercmp</code></h1>
+<div class="codex-doc-node codex-operator codex-function"><code class="codex-name">python-vercmp</code><code class="codex-lambda-list">(a b)</code><div class="codex-docstring"><p>Compare two Python (pip) version numbers according to PEP 440.</p><p>  First compares the public version identifiers using debian-vercmp on
+  python-normalize'd versions. If the public versions are equal and one
+  has a local version identifier, the version with the local identifier
+  is considered newer. If both have local identifiers, they are compared
+  using naive-vercmp.</p><p>  Examples:</p><p>    (python-vercmp &quot;1.0a1&quot; &quot;1.0b1&quot;)           ;; =&gt; -1
+    (python-vercmp &quot;1.0&quot; &quot;1.0+local&quot;)         ;; =&gt; -1
+    (python-vercmp &quot;1.0+local1&quot; &quot;1.0+local2&quot;)  ;; =&gt; -1
+    (python-vercmp &quot;1.0.dev1&quot; &quot;1.0a1&quot;)        ;; =&gt; -1</p></div></div>
+
+<h1 id="naive-vercmp"><code>naive-vercmp</code></h1>
+<div class="codex-doc-node codex-operator codex-function"><code class="codex-name">naive-vercmp</code><code class="codex-lambda-list">(a b)</code><div class="codex-docstring"><p>Compare two version numbers separated into parts by punctuation.</p><p>  This is the old rpmvercmp algorithm, used for Python local version parts.
+  Compares each part in turn. If both parts are numeric, compare as numbers.
+  If one part is numeric but the other alphanumeric, the numeric part is
+  newer. If both are alphanumeric, compare lexically.</p><p>  Examples:</p><p>    (naive-vercmp &quot;1.2.0&quot; &quot;1.2&quot;)    ;; =&gt; 1
+    (naive-vercmp &quot;1.2.a&quot; &quot;1.2.b&quot;)  ;; =&gt; -1</p></div></div>
+
+
+</p>
+    </main>
+  </article>
+  <footer>
+    <div class="info">
+      Created with <a href="https://github.com/CommonDoc/codex">Codex</a>.
+    </div>
+  </footer>
+  <script>
+   HighlightLisp.highlight_auto();
+  </script>
+
+  </body>
+</html>

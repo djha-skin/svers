@@ -6,13 +6,12 @@ exec ros -R +Q -- $0 "$@"
 (progn ;;init forms
   (ros:ensure-asdf)
   ;;; https://github.com/ocicl/ocicl.git
-  (asdf:load-system "codex"))
-
-(defpackage :ros.script.build-docs.3943893088
-  (:use :cl))
-(in-package :ros.script.build-docs.3943893088)
-
-(defun main (&rest argv)
-  (declare (ignorable argv))
-  (codex:document "com.djhaskin.svers"))
+  (handler-case
+      (progn
+        (asdf:load-system "codex")
+        (asdf:load-system "codex-templates")
+        (codex:document "com.djhaskin.svers"))
+    (error (e)
+      (format *error-output* "~&Build failed: ~A~%" e)
+      (uiop:quit 1))))
 ;;; vim: set ft=lisp lisp:
