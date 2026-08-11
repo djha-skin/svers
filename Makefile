@@ -24,10 +24,7 @@ $(HTML_DIR)/manual.pdf: $(SIMPLE_HTML_FILES)
 
 $(HTML_FILES): docs/manual.scr docs/manifest.lisp
 	./docs/build-docs.ros
-	mkdir -p docs/build/svers-version-comparison-library/html/assets/
-	rsync -avHAX docs/assets/ docs/build/svers-version-comparison-library/html/assets/
-	cd docs/build/svers-version-comparison-library/html/ && \
-		mv assets/favicon.ico . && \
+	cd $(HTML_DIR) && \
 		rm -f index.html && \
 		ln -s overview.html index.html
 
