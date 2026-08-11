@@ -3,22 +3,17 @@
 #|
 exec ros -R +Q -- $0 "$@"
 |#
-(progn
+(progn ;;init forms
   (ros:ensure-asdf)
-  (handler-case
-      (asdf:load-system "codex")
-    (error (e)
-      (format *error-output* "~&Failed to load codex: ~A~%" e)
-      (uiop:quit 1))))
+  (asdf:load-system "codex")
+  (asdf:load-system "codex-templates"))
 
-(progn
-  (handler-case
-      (asdf:load-system "codex-templates")
-    (error (e)
-      (format *error-output* "~&Failed to load codex-templates: ~A~%" e)
-      (uiop:quit 1))))
+(defpackage :ros.script.build-docs.3943893088
+  (:use :cl))
+(in-package :ros.script.build-docs.3943893088)
 
-(progn
+(defun main (&rest argv)
+  (declare (ignorable argv))
   (handler-case
       (codex:document "com.djhaskin.svers")
     (error (e)
