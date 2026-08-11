@@ -3,14 +3,24 @@
 #|
 exec ros -R +Q -- $0 "$@"
 |#
-(progn ;;init forms
+(progn
   (ros:ensure-asdf)
-  ;;; https://github.com/ocicl/ocicl.git
   (handler-case
-      (progn
-        (asdf:load-system "codex")
-        (asdf:load-system "codex-templates")
-        (codex:document "com.djhaskin.svers"))
+      (asdf:load-system "codex")
+    (error (e)
+      (format *error-output* "~&Failed to load codex: ~A~%" e)
+      (uiop:quit 1))))
+
+(progn
+  (handler-case
+      (asdf:load-system "codex-templates")
+    (error (e)
+      (format *error-output* "~&Failed to load codex-templates: ~A~%" e)
+      (uiop:quit 1))))
+
+(progn
+  (handler-case
+      (codex:document "com.djhaskin.svers")
     (error (e)
       (format *error-output* "~&Build failed: ~A~%" e)
       (uiop:quit 1))))
