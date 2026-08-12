@@ -56,15 +56,15 @@ version comparison schemes.</p><p>This document is available as a
 document</a>.</p><h1 id="how-it-works">How It Works</h1><p>The key insight: by using the <a href="https://www.debian.org/doc/debian-policy/ch-controlfields.html#s-f-Version">Debian version comparison algorithm</a>
 under the hood and simply normalizing version numbers from other schemes so
 that they compare correctly, (almost) all of the version comparison algorithms
-can be improved by optimizing just the Debian version comparison algorithm.</p><p>svers is the Common Lisp port of the <a href="https://djhaskin987.gitlab.io/serovers/">Serovers</a> library
-originally written in Clojure. It supports <code>dsolv</code>
-(<a href="https://github.com/djha-skin/dsolv">https://github.com/djha-skin/dsolv</a>), the Common Lisp
-package resolver.</p><p>This architecture also makes it easy to add and maintain new version comparison
-algorithms — just write a normalization function.<b>Note on liberality:</b></p><p>svers is liberal in what it accepts. If you compare two
-versions using <code>semver-vercmp</code> but one is not semver-compliant, svers will do
-its best instead of failing. This is important because package version numbers
-are set by maintainers, and it would be bad to break a build over a
-technicality.</p><h1 id="usage">Usage</h1><pre><code class="lisp">(asdf:load-system &quot;com.djhaskin.svers&quot;)
+can be improved by optimizing just the Debian version comparison algorithm.</p><p>Svers (ess-verz) is a Common Lisp library port of the
+<a href="https://djhaskin987.gitlab.io/serovers/">Serovers</a> library,
+originally written in Clojure. It supports
+<a href="https://github.com/djha-skin/dsolv">dsolv</a>, the Common Lisp package
+resolver.</p><p>This architecture also makes it easy to add and maintain new version comparison
+algorithms — just write a normalization function.</p><p>Svers is liberal in what it accepts. If you compare two versions using
+<code>semver-vercmp</code> but one is not semver-compliant, Svers will do its best
+instead of failing. This is important because package version numbers are set
+by maintainers, and it would be bad to break a build over a technicality.</p><h1 id="usage">Usage</h1><pre><code class="lisp">(asdf:load-system &quot;com.djhaskin.svers&quot;)
 (use-package :com.djhaskin.svers)
 
 ;; Debian version comparison

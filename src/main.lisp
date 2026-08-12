@@ -149,9 +149,11 @@
 
   Examples:
 
-    (debian-vercmp \"1:2.0-1\" \"1:1.9-2\")  ;; => 1
-    (debian-vercmp \"1.2.3~rc1\" \"1.2.3\")   ;; => -1
-    (debian-vercmp \"1.2.3-1\" \"1.2.3-2\")   ;; => -1"
+@begin[lang=lisp](code)
+(debian-vercmp \"1:2.0-1\" \"1:1.9-2\")  ;; => 1
+(debian-vercmp \"1.2.3~rc1\" \"1.2.3\")   ;; => -1
+(debian-vercmp \"1.2.3-1\" \"1.2.3-2\")   ;; => -1
+@end(code)"
   (let* ((a-epoch-result (epoch a))
          (a-epoch (first a-epoch-result))
          (a-vers (second a-epoch-result))
@@ -172,8 +174,10 @@
 
   Examples:
 
-    (maven-normalize \"1.0.0-alpha\")  ;; => \"1.0.0~~alpha\"
-    (maven-normalize \"1.0.0-rc1\")    ;; => \"1.0.0~~rc1\""
+@begin[lang=lisp](code)
+(maven-normalize \"1.0.0-alpha\")  ;; => \"1.0.0~~alpha\"
+(maven-normalize \"1.0.0-rc1\")    ;; => \"1.0.0~~rc1\"
+@end(code)"
   (let ((it vers))
     (setf it (re:regex-replace-all
                "[!-/:-@\\[-\\`{-}]+([Aa][Ll][Pp][Hh][Aa]|[Aa])" it "~~alpha"))
@@ -207,10 +211,12 @@
 
   Examples:
 
-    (maven-vercmp \"1.0.0-alpha\" \"1.0.0-beta\")     ;; => -1
-    (maven-vercmp \"1.0.0-rc1\" \"1.0.0\")            ;; => -1
-    (maven-vercmp \"1.0.0-snapshot\" \"1.0.0-alpha\") ;; => -1
-    (maven-vercmp \"1.0.0\" \"1.0.0-ga\")             ;; => 0"
+@begin[lang=lisp](code)
+(maven-vercmp \"1.0.0-alpha\" \"1.0.0-beta\")     ;; => -1
+(maven-vercmp \"1.0.0-rc1\" \"1.0.0\")            ;; => -1
+(maven-vercmp \"1.0.0-snapshot\" \"1.0.0-alpha\") ;; => -1
+(maven-vercmp \"1.0.0\" \"1.0.0-ga\")             ;; => 0
+@end(code)"
   (debian-vercmp (maven-normalize a) (maven-normalize b)))
 
 ;;; ─── RPM version comparison ────────────────────────────────────────────────
@@ -222,8 +228,10 @@
 
   Examples:
 
-    (rpm-normalize \"1.0010\")  ;; => \"1.0010\"
-    (rpm-normalize \"2.0.1a\")  ;; => \"2.0.1a\""
+@begin[lang=lisp](code)
+(rpm-normalize \"1.0010\")  ;; => \"1.0010\"
+(rpm-normalize \"2.0.1a\")  ;; => \"2.0.1a\"
+@end(code)"
   (let ((it vers))
     (setf it (re:regex-replace-all "[!-/:-@\\[-\\`{-}]+" it "."))
     (setf it (re:regex-replace-all "([a-zA-Z]+)\\.([0-9]+)" it "\\1\\2"))
@@ -238,8 +246,10 @@
 
   Examples:
 
-    (rpm-vercmp \"1.0010\" \"1.9\")     ;; => 1
-    (rpm-vercmp \"2.0.1\" \"2.0.1a\")   ;; => 1"
+@begin[lang=lisp](code)
+(rpm-vercmp \"1.0010\" \"1.9\")     ;; => 1
+(rpm-vercmp \"2.0.1\" \"2.0.1a\")   ;; => 1
+@end(code)"
   (debian-vercmp (rpm-normalize a) (rpm-normalize b)))
 
 ;;; ─── Semver version comparison ─────────────────────────────────────────────
@@ -252,8 +262,10 @@
 
   Examples:
 
-    (semver-normalize \"1.0.0-alpha\")      ;; => \"1.0.0~alpha\"
-    (semver-normalize \"1.0.0+build1\")     ;; => \"1.0.0\""
+@begin[lang=lisp](code)
+(semver-normalize \"1.0.0-alpha\")      ;; => \"1.0.0~alpha\"
+(semver-normalize \"1.0.0+build1\")     ;; => \"1.0.0\"
+@end(code)"
   (let ((it vers))
     (setf it (re:regex-replace-all "\\+.*$" it ""))
     (setf it (re:regex-replace-all "-" it "~"))
@@ -267,9 +279,11 @@
 
   Examples:
 
-    (semver-vercmp \"1.0.0-alpha\" \"1.0.0\")      ;; => -1
-    (semver-vercmp \"1.0.0+build1\" \"1.0.0\")     ;; => 0
-    (semver-vercmp \"1.0.0-alpha\" \"1.0.0-beta\")  ;; => -1"
+@begin[lang=lisp](code)
+(semver-vercmp \"1.0.0-alpha\" \"1.0.0\")      ;; => -1
+(semver-vercmp \"1.0.0+build1\" \"1.0.0\")     ;; => 0
+(semver-vercmp \"1.0.0-alpha\" \"1.0.0-beta\")  ;; => -1
+@end(code)"
   (debian-vercmp (semver-normalize a) (semver-normalize b)))
 
 ;;; ─── RubyGem version comparison ────────────────────────────────────────────
@@ -282,8 +296,10 @@
 
   Examples:
 
-    (rubygem-normalize \"1.0.a10\")  ;; => \"1.0~a10\"
-    (rubygem-normalize \"1.0.0.a\")  ;; => \"1.0.0~a\""
+@begin[lang=lisp](code)
+(rubygem-normalize \"1.0.a10\")  ;; => \"1.0~a10\"
+(rubygem-normalize \"1.0.0.a\")  ;; => \"1.0.0~a\"
+@end(code)"
   (let ((it vers))
     (setf it (re:regex-replace-all
                "([0-9]+)([a-zA-Z]+)" it "\\1.\\2"))
@@ -301,8 +317,10 @@
 
   Examples:
 
+  @begin[lang=lisp](code)
     (rubygem-vercmp \"1.0.a10\" \"1.0.a9\")  ;; => 1
-    (rubygem-vercmp \"1.0.0\" \"1.0.0.a\")   ;; => -1"
+    (rubygem-vercmp \"1.0.0\" \"1.0.0.a\")   ;; => -1
+  @end(code)"
   (debian-vercmp (rubygem-normalize a) (rubygem-normalize b)))
 
 ;;; ─── Python local part normalization ───────────────────────────────────────
@@ -327,10 +345,12 @@
 
   Examples:
 
-    (python-normalize \"1.0a1\")     ;; => \"1.0~a1\"
-    (python-normalize \"1.0b1\")     ;; => \"1.0~b1\"
-    (python-normalize \"1.0rc1\")    ;; => \"1.0~rc1\"
-    (python-normalize \"1.0.dev1\")  ;; => \"1.0~~dev1\""
+@begin[lang=lisp](code)
+(python-normalize \"1.0a1\")     ;; => \"1.0~a1\"
+(python-normalize \"1.0b1\")     ;; => \"1.0~b1\"
+(python-normalize \"1.0rc1\")    ;; => \"1.0~rc1\"
+(python-normalize \"1.0.dev1\")  ;; => \"1.0~~dev1\"
+@end(code)"
   (let ((it (string-downcase vers)))
     (setf it (re:regex-replace-all "^([0-9]+)!" it "\\1:"))
     (setf it (re:regex-replace-all "\\.post([0-9]+)" it "!~\\1"))
@@ -370,8 +390,10 @@
 
   Examples:
 
-    (naive-vercmp \"1.2.0\" \"1.2\")    ;; => 1
-    (naive-vercmp \"1.2.a\" \"1.2.b\")  ;; => -1"
+@begin[lang=lisp](code)
+(naive-vercmp \"1.2.0\" \"1.2\")    ;; => 1
+(naive-vercmp \"1.2.a\" \"1.2.b\")  ;; => -1
+@end(code)"
   (let ((a-parts (re:split "[!-/:-@\\[-\\`{-}]+" a))
         (b-parts (re:split "[!-/:-@\\[-\\`{-}]+" b)))
     (or (some (lambda (x) (if (not (zerop x)) x nil))
@@ -391,10 +413,12 @@
 
   Examples:
 
-    (python-vercmp \"1.0a1\" \"1.0b1\")           ;; => -1
-    (python-vercmp \"1.0\" \"1.0+local\")         ;; => -1
-    (python-vercmp \"1.0+local1\" \"1.0+local2\")  ;; => -1
-    (python-vercmp \"1.0.dev1\" \"1.0a1\")        ;; => -1"
+@begin[lang=lisp](code)
+(python-vercmp \"1.0a1\" \"1.0b1\")           ;; => -1
+(python-vercmp \"1.0\" \"1.0+local\")         ;; => -1
+(python-vercmp \"1.0+local1\" \"1.0+local2\")  ;; => -1
+(python-vercmp \"1.0.dev1\" \"1.0a1\")        ;; => -1
+@end(code)"
   (let* ((a-pub (re:regex-replace "\\+.*$" a ""))
          (b-pub (re:regex-replace "\\+.*$" b ""))
          (pub-result (debian-vercmp (python-normalize a-pub)

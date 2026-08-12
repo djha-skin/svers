@@ -1,0 +1,4 @@
+#!/bin/sh
+
+ros +Q -e '(asdf:load-system "codex") (codex:document "com.djhaskin.svers")'
+rsync -avHAX docs/build/svers-version-comparison-library/html/ docs/

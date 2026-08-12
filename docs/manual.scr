@@ -17,21 +17,19 @@ under the hood and simply normalizing version numbers from other schemes so
 that they compare correctly, (almost) all of the version comparison algorithms
 can be improved by optimizing just the Debian version comparison algorithm.
 
-svers is the Common Lisp port of the @link[uri="https://djhaskin987.gitlab.io/serovers/"](Serovers) library
-originally written in Clojure. It supports @c(dsolv)
-(@link[uri="https://github.com/djha-skin/dsolv"](https://github.com/djha-skin/dsolv)), the Common Lisp
-package resolver.
+Svers (ess-verz) is a Common Lisp library port of the
+@link[uri="https://djhaskin987.gitlab.io/serovers/"](Serovers) library,
+originally written in Clojure. It supports
+@link[uri="https://github.com/djha-skin/dsolv"](dsolv), the Common Lisp package
+resolver.
 
 This architecture also makes it easy to add and maintain new version comparison
 algorithms — just write a normalization function.
 
-@b(Note on liberality:)
-
-svers is liberal in what it accepts. If you compare two
-versions using @c(semver-vercmp) but one is not semver-compliant, svers will do
-its best instead of failing. This is important because package version numbers
-are set by maintainers, and it would be bad to break a build over a
-technicality.
+Svers is liberal in what it accepts. If you compare two versions using
+@c(semver-vercmp) but one is not semver-compliant, Svers will do its best
+instead of failing. This is important because package version numbers are set
+by maintainers, and it would be bad to break a build over a technicality.
 
 @end(section)
 
